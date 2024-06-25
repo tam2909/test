@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TEMPERATURE AND MOISTURE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+  
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['table']});
+      google.charts.load('current', {'packages':['corechart']});
+  
+      google.charts.setOnLoadCallback(drawTable1);
+      google.charts.setOnLoadCallback(drawTable2);
+      google.charts.setOnLoadCallback(drawChart1);
+      google.charts.setOnLoadCallback(drawChart2);
+
+      var socket = io();  
+
+      socket.on('mqtt_message', function(data) {
+        console.log('Received update_chart event:', data);
+        updateTable1(data);
+        updateTable2(data);
+        updateChart1(data);
+        updateChart2(data);
+      });
+
+
+      function drawTable1() {
+        var table_data = new google.visualization.DataTable();
+        table_data.addColumn('string', 'Time');
+        table_data.addColumn('number', 'Temperature');
+        table_data.addRows([
+          ['{{tem_time[0]}}', {{tem_value[0]}}],
+          ['{{tem_time[1]}}', {{tem_value[1]}}],
+          ['{{tem_time[2]}}', {{tem_value[2]}}],
+          ['{{tem_time[3]}}', {{tem_value[3]}}],
+          ['{{tem_time[4]}}',  {{tem_value[4]}}]
+        ]);
+
+        var table = new google.visualization.Table(document.getElementById('tem_table'));
+
+        table.draw(table_data, {showRowNumber: false, width: '50%', height: '100%'});
+      }
+
+      function updateTable1(data) {
+        var table_data = new google.visualization.DataTable();
+        table_data.addColumn('string', 'Time');
+        table_data.addColumn('number', 'Temperature');
+        table_data.addRows([
+          [data.tem_time[0], data.tem_value[0]],
+          [data.tem_time[1], data.tem_value[1]],
+          [data.tem_time[2], data.tem_value[2]],
+          [data.tem_time[3], data.tem_value[3]],
+          [data.tem_time[4], data.tem_value[4]]
+        ]);
+
+        var table = new google.visualization.Table(document.getElementById('tem_table'));
+
+        table.draw(table_data, {showRowNumber: false, width: '50%', height: '100%'});
+      }
+
+      function drawTable2() {
+        var table_data = new google.visualization.DataTable();
+        table_data.addColumn('string', 'Time');
+        table_data.addColumn('number', 'Moisture');
+        table_data.addRows([
+          ['{{moi_time[0]}}', {{moi_value[0]}}],
+          ['{{moi_time[1]}}', {{moi_value[1]}}],
+          ['{{moi_time[2]}}', {{moi_value[2]}}],
+          ['{{moi_time[3]}}', {{moi_value[3]}}],
+          ['{{moi_time[4]}}', {{moi_value[4]}}]
+        ]);
+
+        var table = new google.visualization.Table(document.getElementById('moi_table'));
+
+        table.draw(table_data, {showRowNumber: false, width: '50%', height: '100%'});
+      }
+
+      function updateTable2(data) {
+        var table_data = new google.visualization.DataTable();
+        table_data.addColumn('string', 'Time');
+        table_data.addColumn('number', 'Moisture');
+        table_data.addRows([
+          [data.moi_time[0], data.moi_value[0]],
+          [data.moi_time[1], data.moi_value[1]],
+          [data.moi_time[2], data.moi_value[2]],
+          [data.moi_time[3], data.moi_value[3]],
+          [data.moi_time[4], data.moi_value[4]]
+        ]);
+
+        var table = new google.visualization.Table(document.getElementById('moi_table'));
+
+        table.draw(table_data, {showRowNumber: false, width: '50%', height: '100%'});
+      }
+
+      function drawChart1() {
+        var chart_data = google.visualization.arrayToDataTable([
+          ['Time','°C'],
+          ['{{tem_time[0]}}',{{tem_value[0]}}],
+          ['{{tem_time[1]}}',{{tem_value[1]}}],
+          ['{{tem_time[2]}}',{{tem_value[2]}}],
+          ['{{tem_time[3]}}',{{tem_value[3]}}],
+          ['{{tem_time[4]}}',{{tem_value[4]}}],
+        ]);
+
+        var options = {
+          title: 'TEMPERATURE',
+          hAxis: {title: 'Time',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0},
+          colors: ['red', 'red']
+        };
+        var chart = new google.visualization.AreaChart(document.getElementById('tem_chart'));
+        chart.draw(chart_data, options);
+      }
+      
+      function updateChart1(data) {
+        var chart_data = google.visualization.arrayToDataTable([
+          ['Time','°C'],
+          [data.tem_time[0], data.tem_value[0]],
+          [data.tem_time[1], data.tem_value[1]],
+          [data.tem_time[2], data.tem_value[2]],
+          [data.tem_time[3], data.tem_value[3]],
+          [data.tem_time[4], data.tem_value[4]],
+        ]);
+
+        var options = {
+          title: 'TEMPERATURE',
+          hAxis: {title: 'Time',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0},
+          colors: ['red', 'red']
+          
+        };
+        var chart = new google.visualization.AreaChart(document.getElementById('tem_chart'));
+        chart.draw(chart_data, options);
+      }
+
+      function drawChart2() {
+        var chart_data = google.visualization.arrayToDataTable([
+          ['Time', '%'],
+          ['{{moi_time[0]}}',{{moi_value[0]}}],
+          ['{{moi_time[1]}}',{{moi_value[1]}}],
+          ['{{moi_time[2]}}',{{moi_value[2]}}],
+          ['{{moi_time[3]}}',{{moi_value[3]}}],
+          ['{{moi_time[4]}}',{{moi_value[4]}}],
+        ]);
+
+        var options = {
+          title: 'MOISTURE',
+          hAxis: {title: 'Time',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0}
+        };
+        var chart = new google.visualization.AreaChart(document.getElementById('moi_chart'));
+        chart.draw(chart_data, options);
+
+      }
+      function updateChart2(data) {
+        var chart_data = google.visualization.arrayToDataTable([
+          ['Time','%'],
+          [data.moi_time[0], data.moi_value[0]],
+          [data.moi_time[1], data.moi_value[1]],
+          [data.moi_time[2], data.moi_value[2]],
+          [data.moi_time[3], data.moi_value[3]],
+          [data.moi_time[4], data.moi_value[4]],
+        ]);
+
+        var options = {
+          title: 'MOISTURE',
+          hAxis: {title: 'Time',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0}
+        };
+        var chart = new google.visualization.AreaChart(document.getElementById('moi_chart'));
+        chart.draw(chart_data, options);
+      }
+    </script>
+</head>
+<body>
+    
+    <h1>TEMPERATURE</h1> 
+    <div id="tem_table" align = 'center'></div>
+    <div id="tem_chart" style="width: 100%; height: 500px;"></div>
+    <h1>MOISTURE</h1>
+    <div id="moi_table" align = 'center'></div>
+    <div id="moi_chart" style="width: 100%; height: 500px;"></div>
+
+    
+</body>
+</html>
